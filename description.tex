@@ -1,0 +1,315 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\def\r#1{\texttt{r#1}}
+
+\begin{document}
+
+\section{PA3: String Operations in Assembly}
+
+In this assignment, you will write several ARM assembly functions to compute operations on strings. The programs you will be writing will mimic the behavior of functions found in the C standard library.
+
+\section{Background}
+
+Reading section 6.3.7 in the Harris textbook will be useful before starting this assignment. \newline
+
+In C, strings are represented as an array of characters terminated by the null character `\textbackslash 0' (ASCII value {\tt 0x0}). Each character in the string is allocated a byte, in a contiguous chunk of memory, to represent the ASCII value for that character. Now suppose we have an array of characters starting at memory address {\tt0x2000}. The following piece of C code shows how the string ``cse30'' would be laid out in memory: \newline
+
+\begin{lstlisting}[language = C]
+char str[6] = "cse30";
+\end{lstlisting}
+
+\renewcommand{\arraystretch}{2}
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Array: & c & s & e & 3 & 0 & \textbackslash 0 \\ \hline
+Value in memory: & 0x63 & 0x73 & 0x65 & 0x33 & 0x30 & 0x00 \\ \hline
+Address: & 0x2000 & 0x2001 & 0x2002 & 0x2003 & 0x2004 & 0x2005 \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+
+\newline Note that enough memory has been allocated to accommodate for the null character in denoting the end of the string. 
+Also, note that no memory was allocated for the name of the array. Rather, {\tt str} is a pointer to the first character of the string at memory address {\tt0x2000}. The following piece of C code demonstrates an alternative syntax which  equivalently has {\tt str} point to the first character in the string ``cse30''. The function headers you will be implementing in this assignment will follow the syntax below where variables of type {\tt char *} will point to the starting address of the C string. \newline
+
+\begin{lstlisting}[language = C]
+char * str = "cse30";
+\end{lstlisting}
+
+\section{Assembly Functions}
+You will be implementing the following functions in ARM assembly. Do not modify the given function label. The C function header will be provided, and you will be expected to translate the function to assembly with the same input and output. Inputs for the function will be given to you in R0 - R3 in the same order as they appear in the function header. Remember you must preserve caller registers (R4 - R11) if you use them in your assembly function. In addition, please only use R0 - R10 as general-purpose registers. You can test your implementations by running your code with the provided tester program (see Section 4 for details).
+
+\subsection{ {\tt int strlen(char * input);}}
+\textbf{Input:} A string whose length is to be found \newline
+\textbf{Output:} Return an int representing the length of the string\newline
+
+\noindent Sample input in {\tt testCases.txt}:
+\begin{verbatim}
+TEST CASES FOR STRLEN:
+cse30
+\end{verbatim}
+
+\noindent Relevant output displayed:
+\begin{verbatim}
+$ make pa3.run
+$ python runTests.py 
+...
+TESTING STRLEN:
+Length of "cse30": returned 5
+...
+\end{verbatim}
+
+\subsection{{\tt int strcmp(char * input1, char * input2);}}
+\textbf{Input:} Two strings to be compared \newline
+\textbf{Output:} Return -1 if {\tt input1} is less than {\tt input2}, 0 if the strings are equal, or 1 if {\tt input1} is greater than {\tt input2} \newline
+
+\noindent Note that we are comparing the ASCII representations of the strings. {\tt input1} is greater than {\tt input2} if the first differing character has a larger ASCII value. If inputs are differing lengths, the longer string is greater unless the previous condition is already met.
+\noindent \newline
+
+\noindent Sample input in {\tt testCases.txt}:
+\begin{verbatim}
+TEST CASES FOR STRCMP:
+cse30, cse12
+CSE30, cse30
+abc, abcde
+\end{verbatim}
+
+\noindent  Relevant output displayed:
+\begin{verbatim}
+$ make pa3.run
+$ python runTests.py 
+...
+TESTING STRCMP:
+Comparing "cse30" and "cse12": returned 1
+Comparing "CSE30" and "cse30": returned -1
+Comparing "abc" and "abcde": returned -1
+...
+\end{verbatim}
+
+\subsection{{\tt int strtrunc(char * input, int val);}}
+\textbf{Input:} A string and an int to truncate the string by \newline
+\textbf{Output:} Return -1 if {\tt input} is unable to be truncated by {\tt val}. Otherwise, return the new length of the string. The string must also be modified to reflect its new length. \newline
+
+\noindent Sample input in {\tt testCases.txt}:
+\begin{verbatim}
+TEST CASES FOR STRTRUNC:
+cse30, 2
+cse30, 6
+\end{verbatim}
+
+\noindent  Relevant output displayed:
+\begin{verbatim}
+$ make pa3.run
+$ python runTests.py 
+...
+TESTING STRTRUNC:
+Truncating "cse30" by 2 characters: returned 3, string is now "cse"
+Truncating "cse30" by 6 characters: returned -1, string is now "cse30"
+...
+\end{verbatim}
+
+\subsection{{\tt int strrev(char * input, int start, int end);}}
+\textbf{Input:} A string and start/end indices representing the portion of the string to reverse \newline
+\textbf{Output:} Return -1 if indices result in an invalid operation (i.e. start > end, start < 0, end > strlen({\tt input})). Otherwise, return the number of characters that were reversed. The string must also be modified to reflect characters that were reversed. \newline
+
+\noindent Sample input in {\tt testCases.txt}:
+\begin{verbatim}
+TEST CASES FOR STRREV:
+cse30, 1, 3
+cse30, -1, 4
+\end{verbatim}
+
+\noindent  Relevant output displayed:
+\begin{verbatim}
+$ make pa3.run
+$ python runTests.py 
+...
+TESTING STRREV:
+Reversing "cse30" from 1 to 3: returned 2, string is now "c3es0"
+Reversing "cse30" from -1 to 4: returned -1, string is now "cse30"
+...
+\end{verbatim}
+
+\subsection{{\tt int palindrome(char * input);}}
+\textbf{Input:} A string to check if it's a palindrome \newline
+\textbf{Output:} Return 1 if {\tt input} is a palindrome. Otherwise, return 0. Your implementation should be case and space sensitive (i.e. ``Racecar'' should return false). \newline
+
+\noindent Sample input in {\tt testCases.txt}:
+\begin{verbatim}
+TEST CASES FOR PALINDROME:
+cse30
+racecar
+\end{verbatim}
+
+\noindent  Relevant output displayed:
+\begin{verbatim}
+$ make pa3.run
+$ python runTests.py 
+...
+TESTING PALINDROME:
+Checking if palindrome "cse30": returned 0
+Checking if palindrome "racecar": returned 1
+...
+\end{verbatim}
+
+\subsection{{\tt int strfind(char * input, char * toFind);}}
+\textbf{Input:} Two input strings \newline
+\textbf{Output:} Return the index of the first occurrence of {\tt toFind} in {\tt input}. If {\tt toFind} is not found in {\tt input}, return -1. Note if {\tt toFind} is the empty string, the function should return 0. \newline
+
+\noindent Sample input in {\tt testCases.txt}:
+\begin{verbatim}
+TEST CASES FOR STRFIND:
+cse30, a
+cse30, 30
+\end{verbatim}
+
+\noindent  Relevant output displayed:
+\begin{verbatim}
+$ make pa3.run
+$ python runTests.py 
+...
+TESTING STRFIND:
+Find "a" in "cse30": returned -1
+Find "30" in "cse30": returned 3
+...
+\end{verbatim}
+
+\section{Testing Your Functions}
+We have provided a program that will allow you to run your assembly files with multiple test cases and view its output. To add a test case, enter the required arguments for the function on a new line separated by commas. Any test cases should be added  beneath the corresponding section in  {\tt testCases.txt}. You may add as many test cases as you like; however, do not modify any of the given text. \newline
+
+\begin{enumerate}
+\item  Add test cases in {\tt testCases.txt} as follows:
+
+\begin{verbatim}
+TEST CASES FOR STRLEN:
+cse30
+
+TEST CASES FOR STRCMP:
+cse30, cse12
+CSE30, cse30
+abc, abcde
+
+TEST CASES FOR STRTRUNC:
+cse30, 2
+cse30, 6
+
+TEST CASES FOR STRREV:
+cse30, 1, 3
+cse30, -1, 4
+
+TEST CASES FOR PALINDROME:
+cse30
+racecar
+
+TEST CASES FOR STRFIND:
+cse30, a
+cse30, 30
+\end{verbatim}
+
+\item Compile your assembly files using {\tt make pa3.run}
+\begin{verbatim}
+$ make pa3.run
+as -g -o strlen.o strlen.s
+as -g -o strcmp.o strcmp.s
+as -g -o strtrunc.o strtrunc.s
+as -g -o strrev.o strrev.s
+as -g -o palindrome.o palindrome.s
+as -g -o strfind.o strfind.s
+gcc -g -o pa3-runner strlen.o strfind.o strcmp.o strtrunc.o strrev.o 
+palindrome.o pa3.o 
+\end{verbatim}
+
+\item Then, run the following command to perform the test cases you specified:
+\begin{verbatim}
+$ python runTests.py 
+<----------------------------------------------------------------->
+TESTING STRLEN:
+Length of "cse30": returned 5
+<----------------------------------------------------------------->
+TESTING STRCMP:
+Comparing "cse30" and "cse12": returned 1
+Comparing "CSE30" and "cse30": returned -1
+Comparing "abc" and "abcde": returned -1
+<----------------------------------------------------------------->
+TESTING STRTRUNC:
+Truncating "cse30" by 2 characters: returned 3, string is now "cse"
+Truncating "cse30" by 6 characters: returned -1, string is now "cse30"
+<----------------------------------------------------------------->
+TESTING STRREV:
+Reversing "cse30" from 1 to 3: returned 2, string is now "c3es0"
+Reversing "cse30" from -1 to 4: returned -1, string is now "cse30"
+<----------------------------------------------------------------->
+TESTING PALINDROME:
+Checking if palindrome "cse30": returned 0
+Checking if palindrome "racecar": returned 1
+<----------------------------------------------------------------->
+TESTING STRFIND:
+Find "a" in "cse30": returned -1
+Find "30" in "cse30": returned 3
+<----------------------------------------------------------------->
+\end{verbatim}
+\end{enumerate}
+
+\section{Reminders}
+Please keep the following points in mind when completing this assignment:
+\begin{itemize}
+    \item Parameters of type {\tt char *} will point to the starting address of the string.
+    \item Do not modify the given function labels in the assembly files.
+    \item Do not modify the given text in {\tt testCases.txt}.
+    \item You must preserve caller registers if you use them in your assembly function.
+    \item Please only use R0 - R10 as general-purpose registers for this assignment.
+    
+\end{itemize}
+
+\section{README}
+
+In addition to your code, please include a README file which contains your
+answers to the following questions:
+
+\begin{enumerate}
+
+\item Given the following piece of C code: {\tt char * str = ``abcd'';} \newline Suppose {\tt str} points to memory address {\tt 0x50}. Show what values are laid out in memory from memory address 0x50 to 0x54 after the code runs. Additionally, explain why a character needs a byte of memory.
+
+\item Explain how you would concatenate a C-string {\tt input2} to the end of another C-string {\tt input1} in assembly. You do not need to provide code. Assume enough memory has been allocated to accommodate the length of the new string, and the starting address of the new string is the same as the starting address of {\tt input1}.
+
+\item Explain what information a function needs to preserve as the callee.  
+
+\end{enumerate}
+
+\section{Commenting and Style Guide}
+
+Every section of code, loop, or branch command needs to be commented, although
+you are free to include other comments. Lines of code should not exceed 80
+characters.
+
+On including your name in files: To detect instances of academic integrity
+violations in programming assignments we may use 3rd party software.  We
+recommend you only include your class lab account ID (not your name or PID) in
+your submissions.  Including your name and/or PID will disclose that
+information to the 3rd party.
+
+\section{Handin}
+
+Commit and push the six files to the Github repository that was created
+for you by 11:59PM on Tuesday, October 31. You can push up to one day late for
+a 20\% penalty. After you push, make sure to check on Github that the files are
+actually there; we will mark all of the repositories for grading a few minutes
+after midnight and grade precisely what is there.
+
+Your handin should include:
+
+\begin{itemize}
+\item Six assembly files ({\tt strlen.s}, {\tt strcmp.s}, {\tt strtrunc.s}, {\tt strrev.s}, {\tt palindrome.s}, {\tt strfind.s})
+\item A single README.txt file that has answers to the open-ended questions
+above, as specified.
+\end{itemize}
+
+
+Note that you do not need to hand in the {\tt .o} files.
+\end{document}
