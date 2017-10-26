@@ -4,6 +4,8 @@
 \usepackage{listings}
 \usepackage[T1]{fontenc}
 \def\r#1{\texttt{r#1}}
+\usepackage[margin=0.65in]{geometry} %Change Margin
+
 
 \begin{document}
 
@@ -34,8 +36,7 @@ Address: & 0x2000 & 0x2001 & 0x2002 & 0x2003 & 0x2004 & 0x2005 \\ \hline
 }
 \end{table}
 
-
-\newline Note that enough memory has been allocated to accommodate for the null character in denoting the end of the string. 
+Note that enough memory has been allocated to accommodate for the null character in denoting the end of the string. 
 Also, note that no memory was allocated for the name of the array. Rather, {\tt str} is a pointer to the first character of the string at memory address {\tt0x2000}. The following piece of C code demonstrates an alternative syntax which  equivalently has {\tt str} point to the first character in the string ``cse30''. The function headers you will be implementing in this assignment will follow the syntax below where variables of type {\tt char *} will point to the starting address of the C string. \newline
 
 \begin{lstlisting}[language = C]
@@ -256,6 +257,57 @@ Find "30" in "cse30": returned 3
 \end{verbatim}
 \end{enumerate}
 
+\section{Debugging your programs}
+The runTests.py is a script that simply calls \texttt{pa3-runner} functions at once. It's possible to test each of your functions separately using \texttt{pa3-runner}. The \texttt{pa3-runner} can be run individually for each of the six functions as follows.\\
+From your local repository that holds the cloned files, run:
+
+\begin{itemize}
+\item strlen:
+\begin{verbatim}
+./pa3-runner strlen <input>
+\end{verbatim}
+\item strcmp:
+\begin{verbatim}
+./pa3-runner strcmp <input1> <input2>
+\end{verbatim}
+\item strtrunc:
+\begin{verbatim}
+./pa3-runner strtrunc <input> <val>
+\end{verbatim}
+\item strrev:
+\begin{verbatim}
+./pa3-runner strrev <input> <start> <end>
+\end{verbatim}
+\item palindrome:
+\begin{verbatim}
+./pa3-runner palindrome <input>
+\end{verbatim}
+\item strfind:
+\begin{verbatim}
+./pa3-runner strfind <input> <toFind>
+\end{verbatim}
+\end{itemize}
+
+\textbf{Optional:}
+To use \texttt{pa3-runner} instead of \texttt{./pa3-runner}, create an alias from the folder you're working out of:
+\begin{verbatim}
+$ echo "alias pa3-runner=$(pwd)/pa3-runner" >> ~/.bash_profile
+$ source ~/.bash_profile
+\end{verbatim}
+You can then use the runner as:\\
+\texttt{pa3-runner strlen <input>}
+
+
+\textbf{Using gdb:}
+To use gdb, you'll have to use the \texttt{-{}-args} argument to pass parameters to the string function being called. Following that, you can set a breakpoint at the \textit{label} used in the assembly file. For example, to debug \texttt{strlen}:
+\begin{itemize}
+\item[\$]\texttt{gdb -{}-args pa3-runner strlen cse30}
+\item[(gdb)]\texttt{b mystrlen} \hspace{10mm} [set a breakpoint]
+\item[(gdb)]\texttt{start}  \hspace{19mm}   [start the program]
+\item[(gdb)]\texttt{layout reg} \hspace{10mm} [show the layout with sourc e code and registers]
+\item[(gdb)]\texttt{continue} \hspace{14mm}  [jump to the breakpoint]
+\end{itemize}
+From here on, you can debug the program.
 \section{Reminders}
 Please keep the following points in mind when completing this assignment:
 \begin{itemize}
