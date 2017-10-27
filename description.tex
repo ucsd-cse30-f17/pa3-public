@@ -117,7 +117,7 @@ Truncating "cse30" by 6 characters: returned -1, string is now "cse30"
 
 \subsection{{\tt int strrev(char * input, int start, int end);}}
 \textbf{Input:} A string and start/end indices representing the portion of the string to reverse \newline
-\textbf{Output:} Return -1 if indices result in an invalid operation (i.e. start > end, start < 0, end > strlen({\tt input})). Otherwise, return the number of characters that were reversed. The string must also be modified to reflect characters that were reversed. \newline
+\textbf{Output:} Return -1 if indices result in an invalid operation (i.e. start > end, start < 0, end $\geq$ strlen({\tt input})). Otherwise, return the number of characters that were reversed. The string must also be modified to reflect characters that were reversed. \newline
 
 \noindent Sample input in {\tt testCases.txt}:
 \begin{verbatim}
@@ -225,7 +225,6 @@ as -g -o strfind.o strfind.s
 gcc -g -o pa3-runner strlen.o strfind.o strcmp.o strtrunc.o strrev.o 
 palindrome.o pa3.o 
 \end{verbatim}
-
 \item Then, run the following command to perform the test cases you specified:
 \begin{verbatim}
 $ python runTests.py 
@@ -296,8 +295,6 @@ $ source ~/.bash_profile
 \end{verbatim}
 You can then use the runner as:\\
 \texttt{pa3-runner strlen <input>}
-
-
 \textbf{Using gdb:}
 To use gdb, you'll have to use the \texttt{-{}-args} argument to pass parameters to the string function being called. Following that, you can set a breakpoint at the \textit{label} used in the assembly file. For example, to debug \texttt{strlen}:
 \begin{itemize}
@@ -318,50 +315,34 @@ Please keep the following points in mind when completing this assignment:
     \item Please only use R0 - R10 as general-purpose registers for this assignment.
     
 \end{itemize}
-
 \section{README}
-
 In addition to your code, please include a README file which contains your
 answers to the following questions:
-
 \begin{enumerate}
-
 \item Given the following piece of C code: {\tt char * str = ``abcd'';} \newline Suppose {\tt str} points to memory address {\tt 0x50}. Show what values are laid out in memory from memory address 0x50 to 0x54 after the code runs. Additionally, explain why a character needs a byte of memory.
-
 \item Explain how you would concatenate a C-string {\tt input2} to the end of another C-string {\tt input1} in assembly. You do not need to provide code. Assume enough memory has been allocated to accommodate the length of the new string, and the starting address of the new string is the same as the starting address of {\tt input1}.
-
 \item Explain what information a function needs to preserve as the callee.  
-
 \end{enumerate}
-
 \section{Commenting and Style Guide}
-
 Every section of code, loop, or branch command needs to be commented, although
 you are free to include other comments. Lines of code should not exceed 80
 characters.
-
 On including your name in files: To detect instances of academic integrity
 violations in programming assignments we may use 3rd party software.  We
 recommend you only include your class lab account ID (not your name or PID) in
 your submissions.  Including your name and/or PID will disclose that
 information to the 3rd party.
-
 \section{Handin}
-
 Commit and push the six files to the Github repository that was created
 for you by 11:59PM on Tuesday, October 31. You can push up to one day late for
 a 20\% penalty. After you push, make sure to check on Github that the files are
 actually there; we will mark all of the repositories for grading a few minutes
 after midnight and grade precisely what is there.
-
 Your handin should include:
-
 \begin{itemize}
 \item Six assembly files ({\tt strlen.s}, {\tt strcmp.s}, {\tt strtrunc.s}, {\tt strrev.s}, {\tt palindrome.s}, {\tt strfind.s})
 \item A single README.txt file that has answers to the open-ended questions
 above, as specified.
 \end{itemize}
-
-
 Note that you do not need to hand in the {\tt .o} files.
 \end{document}
